@@ -1,0 +1,805 @@
+.map-album-container {
+    position: relative;
+    width: 98%; /* 更宽的容器 */
+    aspect-ratio: 16 / 12; /* 调整宽高比，给省份更多垂直空间 */
+    max-width: 1600px; /* 更大的最大宽度 */
+    margin: 20px auto;
+    background: #a2d5f2; /* Light blue background, like the sky */
+    border-radius: 15px;
+    padding: 40px; /* 更大的内边距为海岛留出空间 */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    max-height: 90vh;
+    padding-bottom: 60px; /* Space for footer */
+}
+
+#map-world {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+}
+
+#map-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: center center;
+    transition: transform 0.3s ease;
+}
+
+#map-world:active {
+    cursor: grabbing;
+}
+
+.sky-city {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.2); /* Soft white cloud */
+    border-radius: 50% 60% 70% 60% / 50% 50% 60% 60%;
+    width: 200px; /* Wider cloud */
+    height: 120px;
+    padding: 15px;
+    z-index: 10;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex; /* Allow wrapping */
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    backdrop-filter: blur(4px);
+}
+.sky-city:hover {
+    transform: translateX(-50%) scale(1.1);
+    background: rgba(255, 255, 255, 0.3);
+}
+.sky-city .photo-marker {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin: 0; /* Remove margin */
+}
+
+#sky-city {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 100px;
+    background: #a2d5f2;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 1.2em;
+    text-shadow: 1px 1px 2px #000;
+}
+
+/* 中国地图容器 - 调整位置给省份更多空间 */
+#china-map-container {
+    position: absolute;
+    top: 8%;
+    left: 8%;
+    width: 84%;
+    height: 84%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    z-index: 5;
+}
+
+#china-map-svg {
+    width: 100%;
+    height: auto;
+    stroke: #fff;
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+#china-map-svg path {
+    fill: #88d8b0; /* Light green for provinces */
+    transition: fill 0.3s ease;
+    cursor: pointer;
+}
+
+#china-map-svg path:hover {
+    fill: #ffcc80; /* Orange on hover */
+}
+
+.map-photo-marker {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.3s ease, z-index 0.3s;
+    z-index: 5;
+}
+
+.map-photo-marker:hover {
+    transform: scale(1.5);
+    z-index: 15;
+}
+
+.province-island {
+    position: absolute;
+    padding: 8px;
+    border: 2px solid white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.province-island:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+/* 不同省份使用不同颜色 */
+.province-island.color-1 { background-color: #ff6b6b; } /* 红色 */
+.province-island.color-2 { background-color: #4ecdc4; } /* 青色 */
+.province-island.color-3 { background-color: #45b7d1; } /* 蓝色 */
+.province-island.color-4 { background-color: #96ceb4; } /* 绿色 */
+.province-island.color-5 { background-color: #feca57; } /* 黄色 */
+.province-island.color-6 { background-color: #ff9ff3; } /* 粉色 */
+.province-island.color-7 { background-color: #54a0ff; } /* 天蓝色 */
+.province-island.color-8 { background-color: #5f27cd; } /* 紫色 */
+.province-island.color-9 { background-color: #00d2d3; } /* 青绿色 */
+.province-island.color-10 { background-color: #ff6348; } /* 橙红色 */
+.province-island.color-11 { background-color: #2ed573; } /* 翠绿色 */
+.province-island.color-12 { background-color: #ffa502; } /* 橙色 */
+
+.province-island.shape-1 { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+.province-island.shape-2 { border-radius: 80% 20% 60% 40% / 50% 60% 40% 50%; }
+.province-island.shape-3 { border-radius: 50%; } /* Circle */
+.province-island.shape-4 { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); } /* Diamond */
+.province-island.shape-5 { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); } /* Star */
+.province-island.shape-6 { clip-path: path("M0 100 C 50 120, 50 -20, 100 100 Z"); } /* Shell-like */
+.province-island.shape-7 { clip-path: path("M50 0 C-50 50, 150 50, 50 100 C-50 50, 150 50, 50 0 Z"); } /* Leaf-like */
+.province-island.shape-8 { clip-path: ellipse(45% 35% at 50% 50%); } /* Ellipse */
+
+.province-thumbnail {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    transition: transform 0.2s ease;
+}
+
+.province-thumbnail:hover {
+    transform: scale(1.1);
+}
+
+.province-photo-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    min-width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    animation: countPulse 2s ease-in-out infinite;
+    animation-delay: 1s;
+}
+
+.islands-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* So it doesn't block map interaction */
+}
+
+.island {
+    position: absolute;
+    width: 120px; /* 更大的海岛 */
+    height: 120px;
+    background: #f4a261; /* Sandy color */
+    border-radius: 50%;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 5px; /* Add gap */
+    justify-content: center;
+    align-items: center;
+    pointer-events: all;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    /* A more organic, island-like shape */
+    clip-path: path("M 20,80 C 20,80 0,60 10,40 C 20,20 40,20 50,25 C 60,30 80,20 90,40 C 100,60 80,80 80,80 Z");
+    transition: all 0.3s ease;
+    border: 3px solid #e67e22; /* 橙色边框 */
+}
+
+.island:hover {
+    transform: scale(1.1);
+    z-index: 10;
+}
+
+/* 重新调整海岛位置，确保完全包围中心区域 */
+.island.north { top: 1%; left: 50%; transform: translateX(-50%); }
+.island.northeast { top: 5%; right: 1%; }
+.island.east { top: 50%; right: 1%; transform: translateY(-50%); }
+.island.southeast { bottom: 5%; right: 1%; }
+.island.south { bottom: 1%; left: 50%; transform: translateX(-50%); }
+.island.southwest { bottom: 5%; left: 1%; }
+.island.west { top: 50%; left: 1%; transform: translateY(-50%); }
+.island.northwest { top: 5%; left: 1%; }
+
+.island .photo-marker {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin: 0; /* Remove margin */
+}
+
+.photo-marker img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.map-tooltip {
+    position: absolute;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+}
+
+/* Photo Viewer Modal */
+.map-photo-viewer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.map-photo-viewer-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.map-photo-viewer {
+    position: relative;
+    max-width: 80vw;
+    max-height: 80vh;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.map-photo-viewer img {
+    max-width: 60vw;
+    max-height: 60vh;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.map-photo-viewer-caption {
+    margin-top: 15px;
+    color: #333;
+}
+
+.map-viewer-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 30px;
+    color: #333;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.map-viewer-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.4);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.map-viewer-nav-btn:hover {
+    background: rgba(0,0,0,0.7);
+}
+
+.map-viewer-prev-btn {
+    left: -60px;
+}
+
+.map-viewer-next-btn {
+    right: -60px;
+}
+
+.map-viewer-random-btn {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* Map Zoom Controls */
+.map-zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    display: none; /* As per request to remove zoom/pan */
+}
+
+.map-zoom-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.map-zoom-btn:hover {
+    background-color: rgba(0,0,0,0.7);
+}
+
+/* Q版省份设计 */
+.province-block {
+    position: absolute;
+    padding: 6px;
+    border: 2px solid white;
+    border-radius: 12px; /* 圆角让省份看起来更Q */
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 60px;
+    min-height: 45px;
+    max-width: 90px;
+    max-height: 70px;
+    backdrop-filter: blur(4px);
+    overflow: hidden;
+    animation: provinceFloat 6s ease-in-out infinite;
+    animation-delay: calc(var(--province-index, 0) * 0.2s);
+}
+
+.province-block:hover {
+    transform: scale(1.15);
+    z-index: 10;
+    border-color: #ffcc80;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.25);
+}
+
+/* 不同形状的省份 - 让地图更有趣 */
+.province-block.shape-circle {
+    border-radius: 50%;
+    min-width: 55px;
+    min-height: 55px;
+    max-width: 75px;
+    max-height: 75px;
+}
+
+.province-block.shape-rounded {
+    border-radius: 20px;
+}
+
+.province-block.shape-diamond {
+    border-radius: 8px;
+    transform: rotate(45deg);
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 70px;
+    max-height: 70px;
+}
+
+.province-block.shape-diamond:hover {
+    transform: rotate(45deg) scale(1.15);
+}
+
+.province-block.shape-diamond .province-thumbnail,
+.province-block.shape-diamond .province-photo-count,
+.province-block.shape-diamond .province-name {
+    transform: rotate(-45deg);
+}
+
+.province-block.shape-hexagon {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    border-radius: 0;
+    min-width: 65px;
+    min-height: 55px;
+    max-width: 85px;
+    max-height: 75px;
+}
+
+.province-block.shape-star {
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    border-radius: 0;
+    min-width: 60px;
+    min-height: 60px;
+    max-width: 80px;
+    max-height: 80px;
+}
+
+.province-block.shape-oval {
+    border-radius: 50%;
+    min-width: 70px;
+    min-height: 50px;
+    max-width: 90px;
+    max-height: 65px;
+}
+
+/* Q版省份颜色方案 - 更加鲜艳可爱 */
+.province-block.color-1 { background: linear-gradient(135deg, #ff6b6b, #ff8e8e); } /* 红色渐变 */
+.province-block.color-2 { background: linear-gradient(135deg, #4ecdc4, #6ee5d8); } /* 青色渐变 */
+.province-block.color-3 { background: linear-gradient(135deg, #45b7d1, #66c7e0); } /* 蓝色渐变 */
+.province-block.color-4 { background: linear-gradient(135deg, #96ceb4, #a8d8c3); } /* 绿色渐变 */
+.province-block.color-5 { background: linear-gradient(135deg, #feca57, #fed670); } /* 黄色渐变 */
+.province-block.color-6 { background: linear-gradient(135deg, #ff9ff3, #ffb3f5); } /* 粉色渐变 */
+.province-block.color-7 { background: linear-gradient(135deg, #54a0ff, #70b0ff); } /* 天蓝色渐变 */
+.province-block.color-8 { background: linear-gradient(135deg, #5f27cd, #744bdb); } /* 紫色渐变 */
+.province-block.color-9 { background: linear-gradient(135deg, #00d2d3, #1ae5e6); } /* 青绿色渐变 */
+.province-block.color-10 { background: linear-gradient(135deg, #ff6348, #ff7c6b); } /* 橙红色渐变 */
+.province-block.color-11 { background: linear-gradient(135deg, #2ed573, #4ee085); } /* 翠绿色渐变 */
+.province-block.color-12 { background: linear-gradient(135deg, #ffa502, #ffb733); } /* 橙色渐变 */
+
+/* 省份名称标签 */
+.province-name {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 20;
+}
+
+.province-block:hover .province-name {
+    opacity: 1;
+}
+
+/* 照片计数器 */
+.province-photo-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    min-width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    animation: countPulse 2s ease-in-out infinite;
+    animation-delay: 1s;
+}
+
+/* 添加一些动画效果让地图更生动 */
+@keyframes provinceFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes countPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.province-block {
+    animation: provinceFloat 6s ease-in-out infinite;
+    animation-delay: calc(var(--province-index, 0) * 0.2s);
+}
+
+.province-photo-count {
+    animation: countPulse 2s ease-in-out infinite;
+    animation-delay: 1s;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .map-album-container {
+        max-width: 1200px;
+        aspect-ratio: 4 / 3.5; /* 调整宽高比适应更分散的布局 */
+    }
+    
+    #china-map-container {
+        top: 10%;
+        left: 10%;
+        width: 80%;
+        height: 80%;
+    }
+    
+    .province-block {
+        min-width: 45px;
+        min-height: 35px;
+        max-width: 70px;
+        max-height: 55px;
+        padding: 4px;
+        gap: 3px;
+    }
+    
+    .province-block.shape-circle {
+        min-width: 40px;
+        min-height: 40px;
+        max-width: 60px;
+        max-height: 60px;
+    }
+    
+    .province-block.shape-diamond {
+        min-width: 38px;
+        min-height: 38px;
+        max-width: 55px;
+        max-height: 55px;
+    }
+    
+    .province-thumbnail {
+        width: 26px;
+        height: 26px;
+    }
+}
+
+@media (max-width: 768px) {
+    .map-album-container {
+        aspect-ratio: 3 / 4.5; /* 移动端给更多垂直空间 */
+        padding: 20px;
+    }
+    
+    #china-map-container {
+        top: 12%;
+        left: 6%;
+        width: 88%;
+        height: 76%;
+    }
+    
+    .province-block {
+        min-width: 35px;
+        min-height: 28px;
+        max-width: 55px;
+        max-height: 42px;
+        padding: 3px;
+        gap: 2px;
+        border-width: 1.5px;
+    }
+    
+    .province-block.shape-circle {
+        min-width: 32px;
+        min-height: 32px;
+        max-width: 48px;
+        max-height: 48px;
+    }
+    
+    .province-block.shape-diamond {
+        min-width: 30px;
+        min-height: 30px;
+        max-width: 42px;
+        max-height: 42px;
+    }
+    
+    .province-block.shape-hexagon,
+    .province-block.shape-star {
+        min-width: 35px;
+        min-height: 35px;
+        max-width: 50px;
+        max-height: 50px;
+    }
+    
+    .province-thumbnail {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .province-photo-count {
+        min-width: 16px;
+        height: 16px;
+        font-size: 9px;
+        top: -4px;
+        right: -4px;
+    }
+    
+    .province-name {
+        font-size: 9px;
+        bottom: -20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .map-album-container {
+        width: 95%;
+        padding: 15px;
+        aspect-ratio: 3 / 5; /* 小屏幕更多垂直空间 */
+    }
+    
+    #china-map-container {
+        top: 10%;
+        left: 5%;
+        width: 90%;
+        height: 80%;
+    }
+    
+    .province-block {
+        min-width: 28px;
+        min-height: 22px;
+        max-width: 42px;
+        max-height: 32px;
+        padding: 2px;
+        gap: 1px;
+        border-width: 1px;
+    }
+    
+    .province-block.shape-circle {
+        min-width: 25px;
+        min-height: 25px;
+        max-width: 36px;
+        max-height: 36px;
+    }
+    
+    .province-block.shape-diamond {
+        min-width: 24px;
+        min-height: 24px;
+        max-width: 32px;
+        max-height: 32px;
+    }
+    
+    .province-block.shape-hexagon,
+    .province-block.shape-star {
+        min-width: 26px;
+        min-height: 26px;
+        max-width: 38px;
+        max-height: 38px;
+    }
+    
+    .province-thumbnail {
+        width: 16px;
+        height: 16px;
+        border-width: 1px;
+    }
+    
+    .province-photo-count {
+        min-width: 14px;
+        height: 14px;
+        font-size: 8px;
+        top: -3px;
+        right: -3px;
+    }
+    
+    .province-name {
+        font-size: 8px;
+        bottom: -18px;
+    }
+}
+
+/* 优化tooltip在小屏幕上的显示 */
+@media (max-width: 768px) {
+    .map-tooltip {
+        font-size: 12px;
+        padding: 6px 10px;
+        max-width: 200px;
+    }
+    
+    .map-tooltip h4 {
+        font-size: 14px;
+        margin: 0 0 4px 0;
+    }
+    
+    .map-tooltip p {
+        margin: 2px 0;
+    }
+}
+
+/* 为省份添加特殊效果 */
+.province-block.has-photos {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 0 0 2px rgba(255,255,255,0.3);
+}
+
+.province-block.has-many-photos {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 3px rgba(255,204,128,0.5);
+}
+
+.province-block.has-photos:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,204,128,0.8);
+}
+
+/* 让地图看起来更立体 */
+.map-album-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 15px;
+    pointer-events: none;
+}
+
+/* 增强天空之城的效果 */
+.sky-city-wrapper {
+    position: relative;
+    z-index: 15;
+}
+
+.sky-city-wrapper h3 {
+    text-align: center;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    font-size: 16px;
+    margin-bottom: 10px;
+} 

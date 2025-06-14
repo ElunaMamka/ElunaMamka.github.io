@@ -1,2456 +1,358 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-
-
     <title>ElunaMamka</title>
-     
     <link rel="stylesheet" type="text/css" href="static/css/FiraCode.css">
-    <link rel="stylesheet" type="text/css" href="static/css/nutssss.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="shortcut icon" href="/static/image/icon.png">
-    <style>
-        /* 导航栏样式 */
-        .nav-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        #box {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 50px;
-            padding-top: 30px;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        
-        .nav-tabs {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px 0;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .nav-tab {
-            padding: 12px 25px;
-            margin: 0 10px;
-            cursor: pointer;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .nav-tab:hover {
-            background: rgba(52, 152, 219, 0.6);
-            color: white;
-            transform: translateY(-2px);
-            border-color: rgba(52, 152, 219, 0.8);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-        
-        .nav-tab.active {
-            background: rgba(52, 152, 219, 0.8);
-            color: white;
-            border-color: rgba(52, 152, 219, 1);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
-        }
-        
-        /* 内容区域 */
-        .content-section {
-            display: none;
-            min-height: 100vh;
-            padding-top: 80px;
-        }
-        
-        .content-section.active {
-            display: block;
-        }
-        
-        /* 终端切换按钮样式 */
-        .terminal-switcher {
-            position: absolute;
-            right: -80px; /* 移到右侧边 */
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column; /* 垂直排列 */
-            gap: 15px;
-            z-index: 100;
-        }
-        
-        .switch-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%; /* 改为圆形 */
-            border: none;
-            cursor: pointer;
-            font-size: 24px; /* Icon size */
-            color: white;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .switch-btn:hover {
-            transform: translateX(-8px) scale(1.1); /* 悬停时向左移动 */
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-        
-        .switch-btn.profile {
-            background: linear-gradient(135deg, #FF6B9D, #FF8E9B); /* 粉色渐变 - 小猫 */
-        }
-        
-        .switch-btn.links {
-            background: linear-gradient(135deg, #4ECDC4, #44A08D); /* 青色渐变 - 小熊 */
-        }
-        
-        .switch-btn.chat {
-            background: linear-gradient(135deg, #FFE66D, #FF6B6B); /* 黄红渐变 - 小狐狸 */
-        }
-        
-        .switch-btn.active {
-            transform: translateX(-12px) scale(1.2); /* 激活状态向左移动更多 */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.2); }
-            50% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.4); }
-            100% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.2); }
-        }
-        
-        /* --- Terminal Stacking Styles --- */
-        #cmdBox {
-            position: relative;
-            width: 600px;
-            height: 480px;
-            perspective: 1000px;
-            /* Removed margin: 0 auto and other positioning */
-        }
-
-        .terminal-window {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 400px;
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            font-family: 'Fira Code', 'dengxian', monospace;
-            color: #333;
-        }
-
-        .terminal-window.is-top {
-            z-index: 3;
-            transform: translateY(0) scale(1);
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .terminal-window.is-middle {
-            z-index: 2;
-            transform: translateY(35px) scale(0.95);
-            opacity: 0.9;
-            pointer-events: none;
-            filter: blur(0.5px);
-        }
-
-        .terminal-window.is-bottom {
-            z-index: 1;
-            transform: translateY(70px) scale(0.9);
-            opacity: 0.8;
-            pointer-events: none;
-            filter: blur(1px);
-        }
-        
-        /* Unify terminal header and content styles */
-        .terminal-window .click {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            display: flex;
-        }
-        .terminal-window .click > div {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin: 0 4px;
-        }
-        .terminal-window .red { background: #ff5f56; }
-        .terminal-window .yellow { background: #ffbd2e; }
-        .terminal-window .green { background: #27c93f; }
-
-        .terminal-window .title {
-            text-align: center;
-            padding: 10px;
-            color: #888;
-            font-size: 13px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        
-        .terminal-window .cmdText, .terminal-window .terminal-output {
-            padding: 15px;
-            height: calc(100% - 45px);
-            overflow-y: auto;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
-        .terminal-window .cmdText a { color: #3498db; }
-        .terminal-window .cmdText a:hover { color: #5dade2; }
-        .terminal-window .cmdText .ul { list-style: none; padding-left: 10px; }
-        
-        /* 修复交互式终端样式 */
-        .terminal-window .terminal-output {
-             height: calc(100% - 95px); /* 为输入行留出空间 */
-        }
-        
-        .terminal-window .terminal-input-line {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            background: rgba(0,0,0,0.05);
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 0 0 10px 10px; /* 匹配终端圆角 */
-        }
-        
-        .terminal-window .terminal-prompt {
-            color: #27ae60;
-            margin-right: 8px;
-            font-weight: bold;
-        }
-        
-        .terminal-window .terminal-input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            outline: none;
-            font-family: 'Fira Code', monospace;
-            font-size: 14px;
-            color: #333;
-        }
-        
-        /* 照片墙样式 */
-        .photo-gallery {
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 0 20px 150px 20px; /* 增加底部padding避免与footer重叠 */
-        }
-        
-        .gallery-title {
-            text-align: center;
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 50px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        .gallery-container {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            perspective: 1000px;
-        }
-        
-        .gallery-viewer {
-            position: relative;
-            width: 80%;
-            height: 500px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .photo-main {
-            width: 600px;
-            height: 400px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            object-fit: cover;
-            transition: all 0.5s ease;
-            z-index: 10;
-            border: 8px solid white;
-        }
-        
-        .photo-side {
-            position: absolute;
-            width: 300px;
-            height: 200px;
-            border-radius: 10px;
-            object-fit: cover;
-            opacity: 0.6;
-            filter: blur(2px);
-            transition: all 0.5s ease;
-            border: 4px solid rgba(255, 255, 255, 0.8);
-        }
-        
-        .photo-left {
-            left: -150px;
-            transform: rotateY(45deg) translateZ(-100px);
-        }
-        
-        .photo-right {
-            right: -150px;
-            transform: rotateY(-45deg) translateZ(-100px);
-        }
-        
-        .gallery-controls {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        
-        .gallery-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #333;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .gallery-btn:hover {
-            background: white;
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .gallery-btn.prev {
-            left: -100px;
-        }
-        
-        .gallery-btn.next {
-            right: -100px;
-        }
-        
-        .photo-info {
-            position: absolute;
-            bottom: -80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 30px;
-            border-radius: 25px;
-            color: #333;
-            font-size: 16px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-        }
-        
-        .random-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .random-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Papers 样式 */
-        .papers-section {
-            max-width: 1000px;
-            margin: 50px auto;
-            padding: 0 20px 100px 20px;
-        }
-        
-        .papers-title {
-            text-align: center;
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 50px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        .paper-card {
-            background: rgba(255, 255, 255, 0.95);
-            margin: 20px 0;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        
-        .paper-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        }
-        
-        .paper-title {
-            font-size: 1.3rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-        
-        .paper-link {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .paper-link:hover {
-            color: #2980b9;
-            text-decoration: underline;
-        }
-        
-        /* 其他链接样式 */
-        .links-section {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 0 20px 100px 20px;
-        }
-        
-        .links-title {
-            text-align: center;
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 50px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        .links-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-        }
-        
-        .link-card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(10px);
-        }
-        
-        .link-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        }
-        
-        .link-card a {
-            color: #3498db;
-            text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-        
-        .link-card a:hover {
-            color: #2980b9;
-        }
-        
-        /* 地图相册样式 */
-        .map-container {
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 0 20px 100px 20px;
-            position: relative;
-        }
-        
-        .map-title {
-            text-align: center;
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        #map-canvas {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            cursor: grab;
-        }
-        
-        #map-canvas:active {
-            cursor: grabbing;
-        }
-        
-        #china-map {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-width: 85%;
-            max-height: 85%;
-            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
-            transition: transform 0.3s ease;
-        }
-        
-        /* Q版地图装饰元素 */
-        .map-decoration {
-            position: absolute;
-            pointer-events: none;
-            z-index: 5;
-        }
-        
-        .cloud {
-            animation: float-cloud 8s ease-in-out infinite;
-        }
-        
-        .cloud1 {
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-        
-        .cloud2 {
-            top: 15%;
-            right: 15%;
-            animation-delay: 2s;
-        }
-        
-        .cloud3 {
-            bottom: 20%;
-            left: 5%;
-            animation-delay: 4s;
-        }
-        
-        @keyframes float-cloud {
-            0%, 100% { transform: translateX(0px) translateY(0px); }
-            25% { transform: translateX(10px) translateY(-5px); }
-            50% { transform: translateX(20px) translateY(0px); }
-            75% { transform: translateX(10px) translateY(5px); }
-        }
-        
-        .sun {
-            position: absolute;
-            top: 8%;
-            right: 8%;
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle, #FFD700, #FFA500);
-            border-radius: 50%;
-            animation: rotate-sun 20s linear infinite;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-        }
-        
-        .sun::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            background: radial-gradient(circle, transparent 50%, rgba(255, 215, 0, 0.3) 70%);
-            border-radius: 50%;
-            animation: pulse-sun 3s ease-in-out infinite;
-        }
-        
-        @keyframes rotate-sun {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        @keyframes pulse-sun {
-            0%, 100% { transform: scale(1); opacity: 0.7; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-        
-        .map-marker {
-            position: absolute;
-            width: 45px;
-            height: 45px;
-            background: radial-gradient(circle, #ff6b6b, #ee5a52);
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
-            z-index: 10;
-            border: 3px solid white;
-        }
-        
-        .map-marker::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 22px;
-            height: 22px;
-            background: white;
-            border-radius: 50%;
-        }
-        
-        .map-marker::after {
-            content: '📍';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(45deg);
-            font-size: 16px;
-        }
-        
-        .map-marker:hover {
-            transform: rotate(-45deg) scale(1.3);
-            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.6);
-            z-index: 15;
-        }
-        
-        .map-marker.sky-city {
-            background: radial-gradient(circle, #667eea, #764ba2);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-            animation: float-sky-city 4s ease-in-out infinite;
-            border: 3px solid #FFD700;
-        }
-        
-        .map-marker.sky-city::after {
-            content: '🏰';
-            font-size: 18px;
-        }
-        
-        .map-marker.sky-city:hover {
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
-        }
-        
-        @keyframes float-sky-city {
-            0%, 100% { transform: rotate(-45deg) translateY(0px); }
-            50% { transform: rotate(-45deg) translateY(-15px); }
-        }
-        
-        .marker-tooltip {
-            position: absolute;
-            bottom: 55px;
-            left: 50%;
-            transform: translateX(-50%) rotate(45deg);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 10px;
-            font-size: 13px;
-            white-space: nowrap;
-            opacity: 0;
-            transition: all 0.3s ease;
-            pointer-events: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .marker-tooltip::before {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 8px solid rgba(0, 0, 0, 0.9);
-        }
-        
-        .map-marker:hover .marker-tooltip {
-            opacity: 1;
-            bottom: 60px;
-        }
-        
-        .map-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 20;
-        }
-        
-        .map-control-btn {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.95);
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .map-control-btn:hover {
-            background: white;
-            transform: scale(1.1);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-        
-        .map-info {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            font-size: 14px;
-            max-width: 320px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .map-info strong {
-            color: #FFD700;
-        }
-        
-        /* 照片模态框样式 */
-        .photo-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        
-        .photo-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 90%;
-            max-height: 90%;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-        
-        .modal-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #333;
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 30px;
-            cursor: pointer;
-            color: #666;
-            transition: color 0.3s ease;
-        }
-        
-        .modal-close:hover {
-            color: #333;
-        }
-        
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .photo-item {
-            background: #f8f9fa;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .photo-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .photo-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        
-        .photo-item:hover img {
-            transform: scale(1.05);
-        }
-        
-        .photo-item-info {
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .photo-item-info div:first-child {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        /* 移动端适配 */
-        @media screen and (max-width: 768px) {
-            .nav-tabs {
-                flex-wrap: wrap;
-                padding: 10px;
-            }
-            
-            .nav-tab {
-                margin: 5px;
-                padding: 8px 15px;
-                font-size: 14px;
-            }
-            
-            .terminal-switcher {
-                gap: 15px;
-                margin-bottom: 50px;
-                padding-top: 30px;
-            }
-            
-            .switch-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
-            
-            .photo-main {
-                width: 90%;
-                height: 300px;
-            }
-            
-            .photo-side {
-                width: 200px;
-                height: 150px;
-            }
-            
-            .photo-left {
-                left: -100px;
-            }
-            
-            .photo-right {
-                right: -100px;
-            }
-            
-            .gallery-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
-            
-            .gallery-btn.prev {
-                left: -70px;
-            }
-            
-            .gallery-btn.next {
-                right: -70px;
-            }
-            
-            .gallery-title,
-            .papers-title,
-            .links-title {
-                font-size: 2rem;
-            }
-
-            #box {
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
-                padding-top: 10px;
-            }
-            
-            .terminal-window {
-                height: 420px;
-            }
-
-            .terminal-window.is-middle {
-                transform: translateY(25px) scale(0.95);
-            }
-    
-            .terminal-window.is-bottom {
-                transform: translateY(50px) scale(0.9);
-            }
-        }
-
-        /* 在<style>标签内合适位置添加如下样式 */
-        .meBox-Button {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            margin-top: 24px;
-        }
-
-        .meBox-Button a {
-            display: inline-block;
-            padding: 10px 28px;
-            border-radius: 25px;
-            background: linear-gradient(90deg, #4ECDC4 0%, #FF6B9D 100%);
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15);
-            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-            letter-spacing: 1px;
-        }
-
-        .meBox-Button a:hover {
-            background: linear-gradient(90deg, #FF6B9D 0%, #4ECDC4 100%);
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.2);
-            color: #fff;
-        }
-    </style>
-
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/map-album.css">
 </head>
 
 <body>
-    <!-- 导航栏 -->
+    <!-- Navigation Bar -->
     <div class="nav-container">
-        <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showSection('home')">主页</div>
-            <div class="nav-tab" onclick="showSection('gallery')">照片墙</div>
-            <div class="nav-tab" onclick="showSection('papers')">Papers</div>
-            <div class="nav-tab" onclick="showSection('links')">其他链接</div>
-            <div class="nav-tab" onclick="showSection('map')">地图相册</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <div style="color: white; font-size: 20px; font-weight: bold;">ElunaMamka</div>
+            <nav class="nav">
+                <button class="nav-btn active" data-target="home">首页</button>
+                <button class="nav-btn" data-target="publications">论文</button>
+                <button class="nav-btn" data-target="articles">文章</button>
+                <button class="nav-btn" data-target="links">链接</button>
+                <button class="nav-btn" data-target="map-album">地图相册</button>
+                <button class="nav-btn" data-target="gallery">相册</button>
+                <button class="nav-btn" data-target="about">关于</button>
+            </nav>
         </div>
     </div>
 
-    <!-- 主页内容 -->
-    <div id="home" class="content-section active">
-        <div id="box">
-            <!-- 个人资料卡片 -->
-            <div class="meBox">
-                <!-- 头像 -->
-                <div class="headPhoto"></div>
-                <!-- 介绍 -->
-                <div class="meBox-title">
-                    <p>I'm ElunaMamka</p>
-                    <div class="fg"></div>
-                </div>
-                <div class="meBox-text">
-                    <p>你好我是五蕴，欢迎光临寒舍</p>
-                    <p>目前主要在做NLP</p>
-                    <p>常花时间瞎折腾古怪的玩意</p>
-                    <p>EM:jinhaotian@whu.edu.cn</p>
-                    <p>elunamamka.tjh@gmail.com</p>
-                </div>
-                <!-- 两个按钮 -->
-                <div class="meBox-Button">
-                    <a href="https://www.cnblogs.com/ElunaMamka/">Cnblog</a>
-                    <a href="https://github.com/ElunaMamka">Github</a>
-                </div>
+    <!-- Starry Bottle with Background Switch -->
+    <div class="starry-bottle-container">
+        <button id="bottle-toggle-btn" class="bottle-toggle" title="折叠/展开">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="bottle-content">
+            <div class="starry-bottle">
+                <div class="bottle-cap"></div>
+                <div class="bottle-stars"></div>
+                <div class="bottle-progress"></div>
             </div>
+            <div class="progress-text" title="愿望值">愿望值: <span>0</span>%</div>
+            <button id="bg-switch-btn" title="切换背景"><i class="fas fa-random"></i></button>
+            <span id="bg-type-display" title="默认">默认</span>
+        </div>
+    </div>
 
-            <!-- 伪终端介绍 -->
-            <div id="cmdBox">
-                <!-- 终端切换按钮 -->
-                <div class="terminal-switcher">
-                    <button class="switch-btn profile active" onclick="switchTerminal('profile')" title="个人信息">🐱</button>
-                    <button class="switch-btn links" onclick="switchTerminal('links')" title="链接和论文">🐻</button>
-                    <button class="switch-btn chat" onclick="switchTerminal('chat')" title="交互终端">🦊</button>
-                </div>
-                
-                <!-- 第一个终端 -->
-                <div class="terminal-window is-top" id="terminal-profile">
-                    <!-- 三个按钮 -->
-                    <div class="click">
-                        <div class="red"></div>
-                        <div class="yellow"></div>
-                        <div class="green"></div>
-                    </div>
-                    <!-- 顶部标题 -->
-                    <div class="title">
-                        <span>ElunaMamka - bash</span>
-                    </div>
-                    <!-- 终端内文字 -->
-                    <div class="cmdText">
-                        <span style="color: #27ae60;">root@ElunaMamka:</span>
-                        <span style="color: #2980b9;">~#</span>
-                        <span style="color: #333;">./weather.sh</span>
-                        <br>
-                        <div id="weather-info" style="color: #2c3e50; font-weight: 500; margin: 10px 0;">
-                            <span>🌤️ 正在获取天气信息...</span>
+    <!-- Hide Content Button -->
+    <div class="hide-content-container">
+        <button id="hide-content-btn" class="hide-content-btn" title="隐藏/显示内容">
+            <i class="fas fa-eye-slash"></i>
+        </button>
+    </div>
+
+    <main>
+        <!-- 首页 - 新设计 -->
+        <div id="home" class="content-section active">
+            <div class="main-container">
+                <!-- Left Panel -->
+                <div class="left-panel">
+                    <div class="intro-card">
+                        <img src="static/image/g.jpg" alt="Avatar" id="avatar">
+                        <h1 class="title">I'm ElunaMamka<span class="cursor">|</span></h1>
+                        <p>你好我是五蕴，欢迎光临寒舍</p>
+                        <p>目前主要在做NLP</p>
+                        <p>常花时间瞎折腾古怪的玩意</p>
+                        <div class="contact">
+                            <p>EM: jinhaotian@whu.edu.cn</p>
+                            <p>elunamamka.tjh@gmail.com</p>
                         </div>
-                        <script>
-                        // 使用免费的天气API获取天气信息
-                        async function getWeather() {
-                            try {
-                                // 使用ipapi获取位置信息
-                                const locationResponse = await fetch('https://ipapi.co/json/');
-                                const locationData = await locationResponse.json();
-                                const city = locationData.city || '北京';
-                                
-                                // 使用OpenWeatherMap免费API (需要注册获取API key)
-                                // 这里使用一个模拟的天气显示
-                                const weatherElement = document.getElementById('weather-info');
-                                const currentTime = new Date();
-                                const hour = currentTime.getHours();
-                                
-                                let weatherIcon, weatherDesc, temp;
-                                if (hour >= 6 && hour < 12) {
-                                    weatherIcon = '🌅';
-                                    weatherDesc = '早晨好';
-                                    temp = Math.floor(Math.random() * 10) + 15;
-                                } else if (hour >= 12 && hour < 18) {
-                                    weatherIcon = '☀️';
-                                    weatherDesc = '下午好';
-                                    temp = Math.floor(Math.random() * 15) + 20;
-                                } else if (hour >= 18 && hour < 22) {
-                                    weatherIcon = '🌆';
-                                    weatherDesc = '傍晚好';
-                                    temp = Math.floor(Math.random() * 10) + 18;
-                                } else {
-                                    weatherIcon = '🌙';
-                                    weatherDesc = '夜晚好';
-                                    temp = Math.floor(Math.random() * 8) + 12;
-                                }
-                                
-                                weatherElement.innerHTML = `
-                                    ${weatherIcon} ${city} | ${weatherDesc} | ${temp}°C | ${currentTime.toLocaleDateString('zh-CN')}
-                                `;
-                            } catch (error) {
-                                document.getElementById('weather-info').innerHTML = '🌈 今天是美好的一天！';
-                            }
-                        }
-                        
-                        // 页面加载时获取天气
-                        if (document.getElementById('weather-info')) {
-                            getWeather();
-                        }
-                        </script>
-                        <span style="color: #27ae60;">root@ElunaMamka:</span>
-                        <span style="color: #2980b9;">~#</span>
-                        <span style="color: #333;">cat /profile.txt</span>
-                        <p>爱好计算机，会去学自己感兴趣的东西</p>
-                        <p>略懂H5，C++和Python开发；爱好费时间折腾去解决问题</p>
-                        <p>目前主要研究NLP自然语言处理</p>
-                        <p>我这里看起来混杂着各种奇怪的仓库</p>
-                        <p>貌似暂时并没有什么有含金量的东西</p>
-                        <p>不过相信未来这里一切都会有的</p>
-                        <span style="color: #27ae60;">root@ElunaMamka:</span>
-                        <span style="color: #2980b9;">~#</span>
-                        <span style="color: #333;">sudo rm -rf /过去的自己/*</span>
-                        <br>
-                        <span style="color: #27ae60;">root@ElunaMamka:</span>
-                        <span style="color: #2980b9;">~#</span>
-                        <span style="color: #333;">sudo touch /崭新的自己/</span>
+                        <div class="links">
+                            <a href="https://www.cnblogs.com/CinqueOrigin/" target="_blank" class="btn">Cnblog</a>
+                            <a href="https://github.com/ElunaMamka" target="_blank" class="btn">Github</a>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- 第二个终端 -->
-                <div class="terminal-window is-middle" id="terminal-links">
-                    <!-- 三个按钮 -->
-                    <div class="click">
-                        <div class="red"></div>
-                        <div class="yellow"></div>
-                        <div class="green"></div>
+
+                <!-- Right Panel -->
+                <div class="right-panel">
+                    <div class="code-block-wrapper">
+                        <div class="code-block-container">
+                            <div id="profile-block" class="code-block active">
+                                <div class="code-header">
+                                    <div class="dots">
+                                        <span class="dot red"></span>
+                                        <span class="dot yellow"></span>
+                                        <span class="dot green"></span>
+                                    </div>
+                                    <div class="title">ElunaMamka — bash</div>
+                                </div>
+                                <pre><code><span class="prompt">root@ElunaMamka:</span><span class="path">~#</span> <span class="command">./weather.sh</span>
+🌆 Beijing | 傍晚好 | 26°C | 2025/6/14
+<span class="prompt">root@ElunaMamka:</span><span class="path">~#</span> <span class="command">cat /profile.txt</span>
+主攻计算机和LLM，会去学自己感兴趣的东西
+略懂LLM，NLP以及Music
+目前主要研究LLM的长文本和Agent，从预训练到SFT到RL
+这里看起来混杂着各种奇怪的仓库和文章
+貌似暂时并没有什么有含金量的东西
+不过相信未来这里一切都会有的
+<span class="prompt">root@ElunaMamka:</span><span class="path">~#</span> <span class="command">sudo rm -rf /过去的自己/*</span>
+<span class="prompt">root@ElunaMamka:</span><span class="path">~#</span> <span class="command">sudo touch /崭新的自己/</span>
+</code></pre>
+                            </div>
+                            <div id="papers-block" class="code-block">
+                                <div class="code-header">
+                                    <div class="dots">
+                                        <span class="dot red"></span>
+                                        <span class="dot yellow"></span>
+                                        <span class="dot green"></span>
+                                    </div>
+                                    <div class="title">My Papers & Links</div>
+                                </div>
+                                <pre><code><span class="prompt">root@ElunaMamka:</span><span class="path">~#</span> <span class="command">./papers.sh</span>
+📚 My Publications:
+&gt; <a href="https://aclanthology.org/2025.findings-naacl.399/" target="_blank" style="color: #8be9fd;">NOTA: Multimodal Music Notation Understanding for Visual Large Language Model (NAACL Findings 2025)</a>
+&gt; <a href="https://arxiv.org/abs/2312.08931" target="_blank" style="color: #8be9fd;">N-Gram Unsupervised Compoundation and Feature Injection for Better Symbolic Music Understanding (AAAI2024)</a>
+
+<span class="prompt">root@ElunaMamka:</span><span class="path">~#</span> <span class="command">./links.sh</span>
+🔗 Useful Links:
+&gt; <a href="https://www.cnblogs.com/CinqueOrigin/" target="_blank" style="color: #8be9fd;">Cnblog - 我的博客园</a>
+&gt; <a href="https://github.com/ElunaMamka" target="_blank" style="color: #8be9fd;">GitHub - 代码仓库</a>
+&gt; <a href="https://elunamamka.gitbook.io/algorithm/" target="_blank" style="color: #8be9fd;">算法笔记 - GitBook</a>
+&gt; <a href="https://skitter-haircut-fb0.notion.site/GPU-Prefill-Decoding-210dbce7c5fe8035a064f4d9817986c5" target="_blank" style="color: #8be9fd;">从GPU计算视角看Prefill和Decoding的差别</a>
+</code></pre>
+                            </div>
+                            <div id="terminal-block" class="code-block">
+                                <div class="code-header">
+                                    <div class="dots">
+                                        <span class="dot red"></span>
+                                        <span class="dot yellow"></span>
+                                        <span class="dot green"></span>
+                                    </div>
+                                    <div class="title">Interactive Terminal</div>
+                                </div>
+                                <div id="terminal-output"></div>
+                                <div class="input-area">
+                                    <span class="prompt">></span>
+                                    <input type="text" id="terminal-input" autocomplete="off" spellcheck="false">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <!-- 顶部标题 -->
-                    <div class="title">
-                        <span>ElunaMamka - bash</span>
-                    </div>
-                    <!-- 终端内文字 -->
-                    <div class="cmdText">
-                        <span style="color: #27ae60;">root@ElunaMamka:</span>
-                        <span style="color: #2980b9;">~#</span>
-                        <span style="color: #333;">./links.sh</span>
-                        <p>其他相关链接:</p>
-                        <ul class="ul">
-                            <li><a href="https://www.cnblogs.com/ElunaMamka/">Blog</a></li>
-                            <li><a href="https://github.com/ElunaMamka">Github</a></li>
-                            <li><a href="mailto:elunamamka.tjh@gmail.com">E-Mail</a></li>
-                            <li><a href="https://elunamamka.gitbook.io/algorithm/">Incomplete Algorithm</a></li>
-                            <li><a href="#">To be appended</a></li>
-                        </ul>
-                        <span style="color: #27ae60;">root@ElunaMamka:</span>
-                        <span style="color: #2980b9;">~#</span>
-                        <span style="color: #333;">./papers.sh</span>
-                        <ul class="ul">
-                            <li><a href="https://arxiv.org/abs/2312.08931">N-Gram Unsupervised Compoundation and Feature Injection for Better Symbolic Music Understanding(AAAI2024)</a></li>
-                            <li><a href="https://aclanthology.org/2025.findings-naacl.399/" target="_blank">NAACL Findings 2025 - 查看论文</a></li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- 第三个交互式终端 -->
-                <div class="terminal-window is-bottom" id="terminal-chat">
-                    <!-- 三个按钮 -->
-                    <div class="click">
-                        <div class="red"></div>
-                        <div class="yellow"></div>
-                        <div class="green"></div>
-                    </div>
-                    <!-- 顶部标题 -->
-                    <div class="title">
-                        <span>ElunaMamka - Interactive Terminal</span>
-                    </div>
-                    <!-- 终端输出区域 -->
-                    <div class="terminal-output" id="terminal-output">
-                        <div style="color: #27ae60;">欢迎来到交互式终端！🎉</div>
-                        <div style="color: #555; margin: 10px 0; white-space: pre-line;">输入 'help' 查看所有可用命令。</div>
-                    </div>
-                    <!-- 输入区域 -->
-                    <div class="terminal-input-line">
-                        <span class="terminal-prompt">visitor@ElunaMamka:~$</span>
-                        <input type="text" class="terminal-input" id="terminal-input" placeholder="输入命令..." onkeypress="handleTerminalInput(event)">
+                    <div class="switcher">
+                        <button class="switch-btn active" data-target="profile-block" title="查看个人简介">🐱</button>
+                        <button class="switch-btn" data-target="papers-block" title="查看论文链接">🐻</button>
+                        <button class="switch-btn" data-target="terminal-block" title="打开交互终端">🦊</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 照片墙 -->
-    <div id="gallery" class="content-section">
-        <div class="photo-gallery">
-            <h2 class="gallery-title">📸 照片墙</h2>
-            <button class="random-btn" onclick="randomPhoto()">🎲 随机浏览</button>
-            <div class="gallery-container">
-                <div class="gallery-viewer">
-                    <img id="photo-left" class="photo-side photo-left" src="static/picture/002.png" alt="Previous">
-                    <img id="photo-main" class="photo-main" src="static/picture/fish.png" alt="Current">
-                    <img id="photo-right" class="photo-side photo-right" src="static/picture/002.png" alt="Next">
-                    <div class="photo-info" id="photo-info">美丽的时光 📷</div>
+        <!-- 论文板块 -->
+        <div id="publications" class="content-section">
+            <h2 class="section-title">📚 我的论文 (<span id="paper-count">2</span>篇)</h2>
+            <div class="filter-tags">
+                <button class="tag-btn active" data-filter="all">查看全部</button>
+                <button class="tag-btn" data-filter="NAACL">NAACL</button>
+                <button class="tag-btn" data-filter="AAAI">AAAI</button>
+                <button class="tag-btn" data-filter="多模态">多模态</button>
+                <button class="tag-btn" data-filter="音乐AI">音乐AI</button>
+                <button class="tag-btn" data-filter="自然语言处理">自然语言处理</button>
+            </div>
+            <div class="papers-list">
+                <div class="paper-item" data-tags="NAACL 多模态 音乐AI">
+                    <h3 class="paper-title"><a href="https://aclanthology.org/2025.findings-naacl.399/" target="_blank">NOTA: Multimodal Music Notation Understanding for Visual Large Language Model (NAACL Findings 2025)</a></h3>
+                    <p class="paper-desc">多模态音乐记谱理解的视觉大语言模型研究</p>
+                    <div class="paper-tags">
+                        <span class="tag">NAACL</span>
+                        <span class="tag">多模态</span>
+                        <span class="tag">音乐AI</span>
+                    </div>
                 </div>
-                <button class="gallery-controls gallery-btn prev" onclick="prevPhoto()">‹</button>
-                <button class="gallery-controls gallery-btn next" onclick="nextPhoto()">›</button>
+                <div class="paper-item" data-tags="AAAI 音乐AI 自然语言处理">
+                    <h3 class="paper-title"><a href="https://arxiv.org/abs/2312.08931" target="_blank">N-Gram Unsupervised Compoundation and Feature Injection for Better Symbolic Music Understanding (AAAI2024)</a></h3>
+                    <p class="paper-desc">基于音乐共现性的的符号化音乐理解</p>
+                    <div class="paper-tags">
+                        <span class="tag">AAAI</span>
+                        <span class="tag">音乐AI</span>
+                        <span class="tag">自然语言处理</span>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- Papers -->
-    <div id="papers" class="content-section">
-        <div class="papers-section">
-            <h2 class="papers-title">📚 学术论文</h2>
-            <div class="paper-card">
-                <div class="paper-title">N-Gram Unsupervised Compoundation and Feature Injection for Better Symbolic Music Understanding</div>
-                <p><a href="https://arxiv.org/abs/2312.08931" class="paper-link" target="_blank">AAAI 2024 - 查看论文</a></p>
+        
+        <!-- 文章板块 -->
+        <div id="articles" class="content-section">
+            <h2 class="section-title">✍️ 我的文章 (<span id="article-count">1</span>篇)</h2>
+            <div class="filter-tags">
+                <button class="tag-btn active" data-filter="all">查看全部</button>
+                <button class="tag-btn" data-filter="GPU">GPU</button>
+                <button class="tag-btn" data-filter="深度学习">深度学习</button>
+                <button class="tag-btn" data-filter="技术分析">技术分析</button>
+                <button class="tag-btn" data-filter="LLM">LLM</button>
             </div>
-            <div class="paper-card">
-                <div class="paper-title">NOTA: Multimodal Music Notation Understanding for Visual Large Language Model</div>
-                <p><a href="https://aclanthology.org/2025.findings-naacl.399/" class="paper-link" target="_blank">NAACL Findings 2025 - 查看论文</a></p>
+            <div class="papers-list">
+                <div class="paper-item" data-tags="GPU 深度学习 技术分析 LLM">
+                    <h3 class="paper-title"><a href="https://skitter-haircut-fb0.notion.site/GPU-Prefill-Decoding-210dbce7c5fe8035a064f4d9817986c5" target="_blank">从GPU计算视角看Prefill和Decoding的差别</a></h3>
+                    <p class="paper-desc">深入分析GPU在处理大语言模型推理时，Prefill阶段和Decoding阶段的计算特点和优化策略</p>
+                    <div class="paper-tags">
+                        <span class="tag">GPU</span>
+                        <span class="tag">深度学习</span>
+                        <span class="tag">技术分析</span>
+                        <span class="tag">LLM</span>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- 其他链接 -->
-    <div id="links" class="content-section">
-        <div class="links-section">
-            <h2 class="links-title">🔗 相关链接</h2>
+        <!-- 链接板块 -->
+        <div id="links" class="content-section">
+            <h2 class="section-title">🔗 相关链接</h2>
             <div class="links-grid">
                 <div class="link-card">
-                    <a href="https://www.cnblogs.com/ElunaMamka/" target="_blank">📝 个人博客</a>
+                    <a href="https://www.cnblogs.com/CinqueOrigin/" target="_blank"><i class="fas fa-blog"></i> Cnblog</a>
                 </div>
                 <div class="link-card">
-                    <a href="https://github.com/ElunaMamka" target="_blank">💻 GitHub</a>
+                    <a href="https://github.com/ElunaMamka" target="_blank"><i class="fab fa-github"></i> GitHub</a>
                 </div>
                 <div class="link-card">
-                    <a href="mailto:elunamamka.tjh@gmail.com">📧 邮箱联系</a>
+                    <a href="mailto:elunamamka.tjh@gmail.com"><i class="fas fa-envelope"></i> 邮箱联系</a>
                 </div>
                 <div class="link-card">
-                    <a href="https://elunamamka.gitbook.io/algorithm/" target="_blank">📖 算法笔记</a>
+                    <a href="https://elunamamka.gitbook.io/algorithm/" target="_blank"><i class="fas fa-book"></i> 算法笔记</a>
                 </div>
                 <div class="link-card">
-                    <a href="#" target="_blank">🚀 更多内容</a>
+                    <a href="#" target="_blank"><i class="fas fa-plus-circle"></i> 更多内容</a>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 地图相册 -->
-    <div id="map" class="content-section">
-        <div class="map-container">
-            <h2 class="map-title">🗺️ 地图相册</h2>
-            <div id="map-canvas">
-                <!-- 装饰元素 -->
-                <div class="sun"></div>
-                
-                <!-- 装饰云朵 -->
-                <div class="map-decoration cloud cloud1">
-                    <svg width="80" height="50" viewBox="0 0 80 50">
-                        <path d="M20,35 Q10,25 20,20 Q25,10 35,15 Q45,5 55,15 Q70,10 65,25 Q75,30 65,35 Z" 
-                              fill="rgba(255,255,255,0.8)" stroke="rgba(255,255,255,0.9)" stroke-width="1"/>
-                    </svg>
+        <!-- 地图相册 -->
+        <div id="map-album" class="content-section">
+            <h2 class="section-title">🗺️ 我的足迹</h2>
+            <div class="map-album-container">
+                <div id="map-world">
+                    <div id="map-content">
+                        <div class="sky-city-wrapper">
+                            <h3><i class="fas fa-cloud"></i> 神秘的天空之城</h3>
+                            <div class="sky-city" id="sky-city-container">
+                                <div id="sky-city">天空之城</div>
+                            </div>
+                        </div>
+                        <div id="china-map-container">
+                            <!-- Q-style map of China will be loaded here by JavaScript -->
+                        </div>
+                        <div class="islands-container">
+                            <div class="island north" id="island-north" data-direction="north"></div>
+                            <div class="island northeast" id="island-northeast" data-direction="northeast"></div>
+                            <div class="island east" id="island-east" data-direction="east"></div>
+                            <div class="island southeast" id="island-southeast" data-direction="southeast"></div>
+                            <div class="island south" id="island-south" data-direction="south"></div>
+                            <div class="island southwest" id="island-southwest" data-direction="southwest"></div>
+                            <div class="island west" id="island-west" data-direction="west"></div>
+                            <div class="island northwest" id="island-northwest" data-direction="northwest"></div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="map-decoration cloud cloud2">
-                    <svg width="60" height="40" viewBox="0 0 60 40">
-                        <path d="M15,28 Q8,20 15,16 Q18,8 28,12 Q35,4 42,12 Q52,8 48,20 Q55,24 48,28 Z" 
-                              fill="rgba(255,255,255,0.7)" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
-                    </svg>
-                </div>
-                
-                <div class="map-decoration cloud cloud3">
-                    <svg width="70" height="45" viewBox="0 0 70 45">
-                        <path d="M18,32 Q9,22 18,18 Q22,9 32,13 Q40,5 48,13 Q58,9 54,22 Q62,26 54,32 Z" 
-                              fill="rgba(255,255,255,0.6)" stroke="rgba(255,255,255,0.7)" stroke-width="1"/>
-                    </svg>
-                </div>
-                
-                <!-- Q版中国地图 -->
-                <svg id="china-map" width="100%" height="100%" viewBox="0 0 1000 800">
-                    <!-- 地图背景渐变 -->
-                    <defs>
-                        <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#e8f5e8;stop-opacity:0.9" />
-                            <stop offset="50%" style="stop-color:#f0f8f0;stop-opacity:0.95" />
-                            <stop offset="100%" style="stop-color:#f8fff8;stop-opacity:1" />
-                        </linearGradient>
-                        
-                        <linearGradient id="provinceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#a8e6cf;stop-opacity:0.8" />
-                            <stop offset="100%" style="stop-color:#88d8a3;stop-opacity:0.9" />
-                        </linearGradient>
-                        
-                        <!-- 阴影滤镜 -->
-                        <filter id="dropshadow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
-                        </filter>
-                    </defs>
-                    
-                    <!-- 主要地图轮廓 - 更详细的中国地图 -->
-                    <g filter="url(#dropshadow)">
-                        <!-- 新疆 -->
-                        <path d="M50,150 L180,120 L220,140 L250,130 L280,150 L300,180 L290,220 L270,250 L240,280 L200,300 L150,290 L100,270 L70,240 L50,200 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 西藏 -->
-                        <path d="M150,350 L280,330 L320,350 L350,380 L340,420 L310,450 L270,460 L220,450 L180,430 L150,400 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 青海 -->
-                        <path d="M280,250 L350,240 L380,260 L390,290 L380,320 L350,340 L320,350 L290,340 L280,310 L285,280 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 甘肃 -->
-                        <path d="M350,200 L420,190 L450,210 L460,240 L450,270 L420,290 L390,300 L360,290 L350,260 L355,230 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 内蒙古 -->
-                        <path d="M400,120 L600,100 L700,110 L750,130 L780,150 L770,180 L750,200 L700,210 L650,200 L600,190 L550,180 L500,170 L450,160 L420,140 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 黑龙江 -->
-                        <path d="M750,80 L850,70 L900,90 L920,120 L910,150 L890,170 L860,180 L820,175 L780,170 L750,150 L755,115 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 吉林 -->
-                        <path d="M780,170 L850,160 L880,180 L870,210 L850,230 L820,235 L790,230 L780,200 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 辽宁 -->
-                        <path d="M750,200 L820,190 L850,210 L840,240 L820,260 L790,270 L760,265 L740,250 L745,225 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 河北 -->
-                        <path d="M650,220 L720,210 L750,230 L740,260 L720,280 L690,290 L660,285 L640,270 L645,245 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 北京 -->
-                        <circle cx="700" cy="240" r="8" fill="#ff6b6b" stroke="white" stroke-width="2"/>
-                        
-                        <!-- 天津 -->
-                        <circle cx="720" cy="250" r="6" fill="#4ECDC4" stroke="white" stroke-width="2"/>
-                        
-                        <!-- 山西 -->
-                        <path d="M600,240 L650,230 L670,250 L665,280 L640,300 L610,305 L590,290 L595,265 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 陕西 -->
-                        <path d="M550,260 L600,250 L620,270 L615,300 L590,330 L560,340 L540,325 L545,295 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 宁夏 -->
-                        <path d="M520,220 L550,215 L560,235 L555,255 L540,265 L525,260 L520,240 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 河南 -->
-                        <path d="M620,280 L680,270 L700,290 L695,320 L670,340 L640,345 L620,330 L625,305 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 山东 -->
-                        <path d="M700,260 L760,250 L780,270 L775,300 L750,320 L720,325 L700,310 L705,285 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 江苏 -->
-                        <path d="M720,320 L780,310 L800,330 L795,360 L770,380 L740,385 L720,370 L725,345 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 安徽 -->
-                        <path d="M670,340 L720,330 L740,350 L735,380 L710,400 L680,405 L670,385 L675,365 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 湖北 -->
-                        <path d="M590,350 L650,340 L680,360 L675,390 L650,410 L620,415 L590,400 L595,375 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 湖南 -->
-                        <path d="M590,410 L650,400 L670,420 L665,450 L640,470 L610,475 L590,460 L595,435 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 江西 -->
-                        <path d="M670,400 L720,390 L740,410 L735,440 L710,460 L680,465 L670,445 L675,420 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 浙江 -->
-                        <path d="M740,380 L790,370 L810,390 L805,420 L780,440 L750,445 L740,425 L745,400 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 福建 -->
-                        <path d="M750,440 L800,430 L820,450 L815,480 L790,500 L760,505 L750,485 L755,460 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 广东 -->
-                        <path d="M640,480 L720,470 L760,490 L755,520 L730,540 L700,545 L670,540 L640,525 L645,500 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 广西 -->
-                        <path d="M560,480 L620,470 L640,490 L635,520 L610,540 L580,545 L560,530 L565,505 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 云南 -->
-                        <path d="M450,450 L520,440 L540,460 L535,490 L510,510 L480,515 L450,500 L455,475 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 贵州 -->
-                        <path d="M520,420 L570,410 L590,430 L585,460 L560,480 L530,485 L520,465 L525,440 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 四川 -->
-                        <path d="M450,350 L520,340 L540,360 L535,390 L510,410 L480,415 L450,400 L455,375 Z" 
-                              fill="url(#provinceGradient)" 
-                              stroke="#4a90a4" 
-                              stroke-width="2" 
-                              opacity="0.9"/>
-                        
-                        <!-- 重庆 -->
-                        <circle cx="580" cy="380" r="7" fill="#9b59b6" stroke="white" stroke-width="2"/>
-                        
-                        <!-- 海南 -->
-                        <ellipse cx="650" cy="580" rx="25" ry="15" 
-                                fill="url(#provinceGradient)" 
-                                stroke="#4a90a4" 
-                                stroke-width="2" 
-                                opacity="0.9"/>
-                        
-                        <!-- 台湾 -->
-                        <ellipse cx="820" cy="500" rx="15" ry="35" 
-                                fill="url(#provinceGradient)" 
-                                stroke="#4a90a4" 
-                                stroke-width="2" 
-                                opacity="0.9"/>
-                    </g>
-                    
-                    <!-- 装饰性山脉 -->
-                    <g opacity="0.3">
-                        <path d="M200,200 L220,180 L240,200 L260,175 L280,200 L300,185 L320,200" 
-                              fill="none" stroke="#8fbc8f" stroke-width="3"/>
-                        <path d="M400,300 L420,280 L440,300 L460,275 L480,300 L500,285 L520,300" 
-                              fill="none" stroke="#8fbc8f" stroke-width="3"/>
-                    </g>
-                    
-                    <!-- 装饰性河流 -->
-                    <g opacity="0.4">
-                        <path d="M500,200 Q550,250 600,300 Q650,350 700,400" 
-                              fill="none" stroke="#87ceeb" stroke-width="4" stroke-linecap="round"/>
-                        <path d="M300,400 Q400,420 500,440 Q600,460 700,480" 
-                              fill="none" stroke="#87ceeb" stroke-width="3" stroke-linecap="round"/>
-                    </g>
-                    
-                    <!-- 可爱的小装饰 -->
-                    <g opacity="0.6">
-                        <!-- 小树 -->
-                        <g transform="translate(300,250)">
-                            <circle cx="0" cy="-5" r="8" fill="#90EE90"/>
-                            <rect x="-2" y="0" width="4" height="10" fill="#8B4513"/>
-                        </g>
-                        
-                        <g transform="translate(600,350)">
-                            <circle cx="0" cy="-5" r="8" fill="#90EE90"/>
-                            <rect x="-2" y="0" width="4" height="10" fill="#8B4513"/>
-                        </g>
-                        
-                        <!-- 小花 -->
-                        <g transform="translate(400,400)">
-                            <circle cx="0" cy="0" r="3" fill="#FFB6C1"/>
-                            <circle cx="-4" cy="-2" r="2" fill="#FF69B4"/>
-                            <circle cx="4" cy="-2" r="2" fill="#FF69B4"/>
-                            <circle cx="-2" cy="4" r="2" fill="#FF69B4"/>
-                            <circle cx="2" cy="4" r="2" fill="#FF69B4"/>
-                        </g>
-                        
-                        <g transform="translate(750,300)">
-                            <circle cx="0" cy="0" r="3" fill="#FFB6C1"/>
-                            <circle cx="-4" cy="-2" r="2" fill="#FF69B4"/>
-                            <circle cx="4" cy="-2" r="2" fill="#FF69B4"/>
-                            <circle cx="-2" cy="4" r="2" fill="#FF69B4"/>
-                            <circle cx="2" cy="4" r="2" fill="#FF69B4"/>
-                        </g>
-                    </g>
-                </svg>
-                
-                <!-- 地图标记点 -->
-                <div id="marker-sky-city" class="map-marker sky-city" style="top: 8%; left: 45%;" onclick="showPhotoModal('sky-city')">
-                    <div class="marker-tooltip">🏰 天空之城 - 神秘之地 ✨</div>
-                </div>
-                <div id="marker-wuhan" class="map-marker" style="top: 48%; left: 58%;" onclick="showPhotoModal('wuhan')">
-                    <div class="marker-tooltip">🎓 武汉 - 1张照片</div>
-                </div>
-                <div id="marker-beijing" class="map-marker" style="top: 30%; left: 70%;" onclick="showPhotoModal('beijing')">
-                    <div class="marker-tooltip">🏛️ 北京 - 1张照片</div>
-                </div>
-                
-                <!-- 地图控制按钮 -->
-                <div class="map-controls">
-                    <button class="map-control-btn" onclick="zoomIn()" title="放大">🔍</button>
-                    <button class="map-control-btn" onclick="zoomOut()" title="缩小">🔎</button>
-                    <button class="map-control-btn" onclick="resetZoom()" title="重置">🏠</button>
-                    <button class="map-control-btn" onclick="toggleFullscreen()" title="全屏">⛶</button>
-                </div>
-                
-                <!-- 地图信息 -->
-                <div class="map-info">
-                    <div><strong>🗺️ Q版交互式地图相册</strong></div>
-                    <div>📍 点击标记查看照片集</div>
-                    <div>🖱️ 拖拽移动地图视角</div>
-                    <div>🔍 滚轮缩放地图</div>
-                    <div>⌨️ 快捷键: +/- 缩放, 0 重置, F 全屏</div>
-                    <div>🏰 天空之城是未分类照片的神秘归宿</div>
+                <div class="map-tooltip" id="map-tooltip"></div>
+                <div class="map-zoom-controls">
+                    <button id="zoom-in-btn" class="map-zoom-btn">+</button>
+                    <button id="zoom-out-btn" class="map-zoom-btn">-</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 照片模态框 -->
-    <div id="photo-modal" class="photo-modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closePhotoModal()">&times;</button>
-            <h2 id="modal-title"></h2>
-            <div id="photo-grid" class="photo-grid"></div>
+        <!-- 相册 -->
+        <div id="gallery" class="content-section">
+            <h2 class="section-title">🖼️ 我的照片墙</h2>
+            <div class="photo-wall-container">
+                <div class="photo-wall">
+                    <!-- Left preview -->
+                    <div class="photo-preview left-preview">
+                        <img id="left-preview-img" src="" alt="Previous">
+                    </div>
+                    
+                    <!-- Navigation buttons -->
+                    <button class="nav-btn-photo prev-btn" id="prev-photo">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <!-- Main photo with frame -->
+                    <div class="main-photo-frame">
+                        <div class="photo-timestamp">
+                            <span id="photo-date"></span>
+                            <span id="photo-location" style="margin-left: 10px;"></span>
+                        </div>
+                        <div class="photo-frame">
+                            <img id="main-photo" src="static/image/bg.jpg" alt="Main Photo">
+                        </div>
+                        <div class="photo-caption">
+                            <div class="caption-bubble">
+                                <span id="photo-text">🌸 美好的回忆总是值得珍藏</span>
+                                <div class="bubble-tail"></div>
+                            </div>
+                        </div>
+                        <div class="photo-info">
+                            <span id="photo-counter">1 / 6</span>
+                            <button id="random-photo" class="random-btn">🎲 随机</button>
+                        </div>
+                    </div>
+                    
+                    <button class="nav-btn-photo next-btn" id="next-photo">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    
+                    <!-- Right preview -->
+                    <div class="photo-preview right-preview">
+                        <img id="right-preview-img" src="" alt="Next">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 关于我 -->
+        <div id="about" class="content-section">
+            <h2 class="section-title">👤 关于我</h2>
+            <div class="about-container">
+                <img src="static/image/g.jpg" alt="Avatar" class="about-avatar">
+                <div class="about-text">
+                    <h3>你好，我是 ElunaMamka</h3>
+                    <p>
+                        一名对 <span class="highlight">自然语言处理</span> 和 <span class="highlight">音乐AI</span> 充满热情的探索者。
+                        我相信代码不只是工具，更是创造与表达的媒介。
+                    </p>
+                    <p>
+                        目前，我正专注于多模态学习领域的研究，致力于搭建理解与生成音乐的桥梁。欢迎通过上方的链接与我交流！
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer">
+        <p>© 2016-2019 XiaoMing | Believe in becoming your ideal self.</p>
+        <p>© 2019-2023 CinqueOrigin | A life of hellos and goodbyes, lost in craving, rage, clinging, folly, and spite.</p>
+        <p>© 2023-2026 ElunaMamka | Where dreams are watered in coral, an otter awaits your sweet at the corner.</p>
+    </footer>
+
+    <!-- Map Photo Viewer Modal -->
+    <div id="map-photo-viewer-overlay" class="map-photo-viewer-overlay">
+        <div class="map-photo-viewer">
+            <span class="map-viewer-close-btn" id="map-viewer-close-btn">&times;</span>
+            <button class="map-viewer-nav-btn map-viewer-prev-btn" id="map-viewer-prev-btn">&#10094;</button>
+            <img id="map-viewer-img" src="" alt="Photo">
+            <button class="map-viewer-nav-btn map-viewer-next-btn" id="map-viewer-next-btn">&#10095;</button>
+            <div id="map-viewer-caption" class="map-photo-viewer-caption"></div>
+            <button class="map-viewer-random-btn" id="map-viewer-random-btn">🎲 随机</button>
         </div>
     </div>
 
-    <!-- 页脚 -->
-    <div id="footer">
-        <p>© 2016-2019 ElunaMamka | Believe in becoming your ideal self.</p>
-        <p>© 2019-2024 ElunaMamka | Meeting,parting,greed,anger,love,obsession.Busy passing through the world of mortals.</p>
-    </div>
-
-    <script>
-        // 导航切换功能
-        function showSection(sectionId) {
-            // 隐藏所有内容区域
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => section.classList.remove('active'));
-            
-            // 显示目标区域
-            document.getElementById(sectionId).classList.add('active');
-            
-            // 更新导航标签状态
-            const tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // 终端切换功能
-        function switchTerminal(terminalType) {
-            const terminals = {
-                profile: document.getElementById('terminal-profile'),
-                links: document.getElementById('terminal-links'),
-                chat: document.getElementById('terminal-chat')
-            };
-
-            // Define the fixed order of terminals to cycle through
-            const order = ['profile', 'links', 'chat'];
-            
-            // Find the selected terminal and move it to the front of the order array
-            const selectedIndex = order.indexOf(terminalType);
-            if (selectedIndex > -1) {
-                order.splice(selectedIndex, 1);
-            }
-            order.unshift(terminalType);
-            
-            // The new stack order is [top, middle, bottom]
-            const topId = order[0];
-            const middleId = order[1];
-            const bottomId = order[2];
-
-            // Remove all positioning classes from all terminals
-            Object.values(terminals).forEach(t => {
-                t.classList.remove('is-top', 'is-middle', 'is-bottom');
-            });
-
-            // Add the new classes based on the calculated order
-            terminals[topId].classList.add('is-top');
-            terminals[middleId].classList.add('is-middle');
-            terminals[bottomId].classList.add('is-bottom');
-            
-            // Update the active state on the switcher buttons
-            document.querySelectorAll('.switch-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.switch-btn.${terminalType}`).classList.add('active');
-        }
-
-        // 照片墙功能
-        const photos = [
-            { src: 'static/picture/fish.png', info: '可爱的小鱼 🐠' },
-            { src: 'static/picture/002.png', info: '美好的回忆 ✨' },
-            { src: 'static/image/g.jpg', info: '个人头像 👤' },
-            // 可以添加更多照片
-        ];
-
-        let currentPhotoIndex = 0;
-
-        function updateGallery() {
-            const mainPhoto = document.getElementById('photo-main');
-            const leftPhoto = document.getElementById('photo-left');
-            const rightPhoto = document.getElementById('photo-right');
-            const photoInfo = document.getElementById('photo-info');
-
-            // 更新主图
-            mainPhoto.src = photos[currentPhotoIndex].src;
-            photoInfo.textContent = photos[currentPhotoIndex].info;
-
-            // 更新左侧图片
-            const leftIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
-            leftPhoto.src = photos[leftIndex].src;
-
-            // 更新右侧图片
-            const rightIndex = (currentPhotoIndex + 1) % photos.length;
-            rightPhoto.src = photos[rightIndex].src;
-        }
-
-        function nextPhoto() {
-            currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
-            updateGallery();
-        }
-
-        function prevPhoto() {
-            currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
-            updateGallery();
-        }
-
-        function randomPhoto() {
-            const randomIndex = Math.floor(Math.random() * photos.length);
-            currentPhotoIndex = randomIndex;
-            updateGallery();
-        }
-
-        // 交互式终端功能
-        const terminalCommands = {
-            help: () => `
-可用命令列表:
-• help - 显示帮助信息
-• about - 关于我
-• skills - 技能列表
-• contact - 联系方式
-• papers - 查看论文列表
-• projects - 我的项目
-• joke - 随机笑话
-• quote - 励志名言
-• time - 当前时间
-• date - 详细日期信息
-• weather - 天气信息
-• music - 随机推荐音乐
-• poem - 随机古诗词
-• color - 随机颜色
-• password - 生成随机密码
-• calc [表达式] - 计算器
-• base64 [文本] - Base64编码
-• reverse [文本] - 反转文本
-• upper [文本] - 转大写
-• lower [文本] - 转小写
-• echo [文本] - 回显文本
-• cowsay [文本] - 让牛说话
-• clear - 清空终端
-• whoami - 我是谁？
-• ls - 列出文件
-• pwd - 当前路径
-• tree - 显示目录树
-• neofetch - 系统信息
-• matrix - 黑客帝国效果
-• love - 爱心动画
-• exit/quit - 退出提示
-
-🎉 彩蛋命令:
-• 试试输入 "42", "hello", "coffee" 等...
-• 或者尝试一些危险命令看看会发生什么 😏`,
-            
-            about: () => `
-关于 ElunaMamka:
-🎓 专注于自然语言处理(NLP)研究
-💻 热爱编程和技术探索
-📚 持续学习新技术
-🌟 相信成为理想的自己
-🎵 专注于音乐符号理解和多模态研究
-🔬 AAAI 2024, NAACL Findings 2025 论文作者
-🏫 武汉大学在读
-💡 喜欢折腾各种有趣的项目`,
-            
-            skills: () => `
-技能树:
-编程语言:
-• Python 🐍 ████████████ 90%
-• C++ ⚡ ████████░░░░ 75%
-• JavaScript 🌐 ███████░░░░░ 70%
-• HTML/CSS 🎨 ████████░░░░ 80%
-
-专业技能:
-• NLP & Machine Learning 🤖 ████████████ 95%
-• 多模态学习 🎭 ████████░░░░ 85%
-• 音乐信息检索 🎵 ███████████░ 90%
-• 深度学习框架 🧠 ████████░░░░ 80%
-• 论文写作 📝 ████████░░░░ 85%
-• 问题解决 🔧 ████████████ 100%`,
-            
-            contact: () => `
-联系方式:
-📧 Email: elunamamka.tjh@gmail.com
-📧 备用: jinhaotian@whu.edu.cn
-🐙 GitHub: https://github.com/ElunaMamka
-📝 博客: https://www.cnblogs.com/ElunaMamka/
-🎓 学校: 武汉大学
-🌍 位置: 中国·武汉`,
-            
-            papers: () => `
-发表论文:
-📄 N-Gram Unsupervised Compoundation and Feature Injection for Better Symbolic Music Understanding (AAAI 2024)
-   🔗 https://arxiv.org/abs/2312.08931
-   
-📄 NOTA: Multimodal Music Notation Understanding for Visual Large Language Model (NAACL Findings 2025)
-   🔗 https://aclanthology.org/2025.findings-naacl.399/
-   
-🔬 研究方向: 音乐符号理解、多模态学习、自然语言处理
-📈 引用统计: 持续增长中...`,
-
-            projects: () => `
-我的项目:
-🎵 MusicBERT - 音乐符号理解模型
-🤖 NOTA - 多模态音乐记谱理解系统
-📚 Algorithm Notes - 算法学习笔记
-🌐 Personal Website - 个人主页
-🔧 Various Tools - 各种实用小工具
-📊 Research Scripts - 研究相关脚本
-
-💡 更多项目请访问我的GitHub!`,
-            
-            joke: () => {
-                const jokes = [
-                    "为什么程序员喜欢黑暗？因为光会产生bug！🐛",
-                    "程序员的三大美德：懒惰、急躁和傲慢。😎",
-                    "世界上有10种人：懂二进制的和不懂的。🤓",
-                    "调试就像是犯罪现场调查，你就是侦探！🕵️",
-                    "代码如诗，但大多数时候更像是恐怖小说...👻",
-                    "为什么音乐AI总是跑调？因为它们缺少音感模块！🎵",
-                    "多模态学习就像学会了读谱又会弹琴的全能选手！🎹",
-                    "机器学习工程师的日常：90%调参，10%怀疑人生。🤖",
-                    "深度学习：让计算机像人一样思考，然后发现人也不怎么会思考。🧠",
-                    "为什么NLP研究员总是很累？因为要处理太多'自然'语言了！📝"
-                ];
-                return jokes[Math.floor(Math.random() * jokes.length)];
-            },
-
-            quote: () => {
-                const quotes = [
-                    "代码是写给人看的，只是顺便能在机器上运行。 - Martin Fowler",
-                    "过早的优化是万恶之源。 - Donald Knuth",
-                    "简单是可靠的前提。 - Edsger Dijkstra",
-                    "程序必须写给人看，只是顺便让机器执行。 - Harold Abelson",
-                    "最好的代码是没有代码。 - Jeff Atwood",
-                    "学而时习之，不亦说乎？ - 孔子",
-                    "路漫漫其修远兮，吾将上下而求索。 - 屈原",
-                    "山重水复疑无路，柳暗花明又一村。 - 陆游",
-                    "宝剑锋从磨砺出，梅花香自苦寒来。 - 古诗",
-                    "不积跬步，无以至千里。 - 荀子"
-                ];
-                return "💭 " + quotes[Math.floor(Math.random() * quotes.length)];
-            },
-
-            music: () => {
-                const songs = [
-                    "🎵 推荐: Canon in D - Pachelbel (古典音乐经典)",
-                    "🎵 推荐: Clair de Lune - Debussy (印象派杰作)",
-                    "🎵 推荐: The Four Seasons - Vivaldi (巴洛克名作)",
-                    "🎵 推荐: Moonlight Sonata - Beethoven (贝多芬月光)",
-                    "🎵 推荐: Ave Maria - Schubert (舒伯特圣母颂)",
-                    "🎵 推荐: Gymnopédie No.1 - Satie (萨蒂体操)",
-                    "🎵 推荐: Comptine d'un autre été - Yann Tiersen (天使爱美丽)",
-                    "🎵 推荐: River Flows in You - Yiruma (李闰珉钢琴曲)",
-                    "🎵 推荐: Ludovico Einaudi - Nuvole Bianche (现代古典)",
-                    "🎵 推荐: Max Richter - On The Nature of Daylight (电影配乐)"
-                ];
-                return songs[Math.floor(Math.random() * songs.length)] + "\n🎧 享受音乐的美好时光！";
-            },
-
-            poem: () => {
-                const poems = [
-                    "春眠不觉晓，处处闻啼鸟。\n夜来风雨声，花落知多少。 - 孟浩然《春晓》",
-                    "床前明月光，疑是地上霜。\n举头望明月，低头思故乡。 - 李白《静夜思》",
-                    "红豆生南国，春来发几枝。\n愿君多采撷，此物最相思。 - 王维《相思》",
-                    "独在异乡为异客，每逢佳节倍思亲。\n遥知兄弟登高处，遍插茱萸少一人。 - 王维《九月九日忆山东兄弟》",
-                    "白日依山尽，黄河入海流。\n欲穷千里目，更上一层楼。 - 王之涣《登鹳雀楼》",
-                    "两个黄鹂鸣翠柳，一行白鹭上青天。\n窗含西岭千秋雪，门泊东吴万里船。 - 杜甫《绝句》"
-                ];
-                return "📜 " + poems[Math.floor(Math.random() * poems.length)];
-            },
-
-            color: () => {
-                const colors = ['#FF6B9D', '#4ECDC4', '#FFE66D', '#FF6B6B', '#4DABF7', '#69DB7C', '#FFD43B', '#DA77F2'];
-                const colorNames = ['粉红', '青绿', '柠檬黄', '珊瑚红', '天蓝', '薄荷绿', '金黄', '紫罗兰'];
-                const randomIndex = Math.floor(Math.random() * colors.length);
-                return `🎨 随机颜色: ${colorNames[randomIndex]} ${colors[randomIndex]}`;
-            },
-
-            password: () => {
-                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-                let password = '';
-                for (let i = 0; i < 12; i++) {
-                    password += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                return `🔐 随机密码: ${password}\n⚠️  请妥善保管，不要在不安全的地方使用！`;
-            },
-            
-            time: () => `⏰ 当前时间: ${new Date().toLocaleString('zh-CN')}`,
-
-            date: () => {
-                const now = new Date();
-                const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-                return `📅 详细日期信息:
-日期: ${now.toLocaleDateString('zh-CN')}
-时间: ${now.toLocaleTimeString('zh-CN')}
-星期: ${weekdays[now.getDay()]}
-时间戳: ${now.getTime()}
-ISO格式: ${now.toISOString()}`;
-            },
-
-            weather: () => {
-                const weathers = [
-                    "☀️ 晴朗 25°C - 适合出门散步",
-                    "⛅ 多云 22°C - 舒适的天气",
-                    "🌧️ 小雨 18°C - 记得带伞",
-                    "❄️ 雪天 -2°C - 注意保暖",
-                    "🌈 雨后天晴 20°C - 空气清新"
-                ];
-                return weathers[Math.floor(Math.random() * weathers.length)];
-            },
-            
-            whoami: () => "你是一位访客，欢迎来到 ElunaMamka 的个人空间！👋\n在这里你可以了解我的研究、项目和想法。",
-            
-            ls: () => `
-drwxr-xr-x  projects/          # 我的项目
-drwxr-xr-x  papers/            # 学术论文
-drwxr-xr-x  photos/            # 照片收藏
-drwxr-xr-x  music_datasets/    # 音乐数据集
-drwxr-xr-x  research_notes/    # 研究笔记
-drwxr-xr-x  code_snippets/     # 代码片段
--rw-r--r--  README.md          # 说明文件
--rw-r--r--  profile.txt        # 个人简介
--rw-r--r--  NOTA_paper.pdf     # NAACL论文
--rw-r--r--  AAAI_paper.pdf     # AAAI论文
--rw-r--r--  .gitignore         # Git忽略文件`,
-            
-            pwd: () => "/home/ElunaMamka/website",
-
-            tree: () => `
-📁 ElunaMamka/
-├── 📁 projects/
-│   ├── 🎵 MusicBERT/
-│   ├── 🤖 NOTA/
-│   └── 📚 AlgorithmNotes/
-├── 📁 papers/
-│   ├── 📄 AAAI2024.pdf
-│   └── 📄 NAACL2025.pdf
-├── 📁 photos/
-│   ├── 🖼️ fish.png
-│   └── 🖼️ memories/
-└── 📁 research/
-    ├── 📊 datasets/
-    └── 🧪 experiments/`,
-
-            neofetch: () => `
-    ╭─────────────────────────╮
-    │     ElunaMamka Info     │
-    ╰─────────────────────────╯
-    
-🖥️  OS: Personal Website v2024
-👤 User: ElunaMamka
-🏫 University: 武汉大学 (WHU)
-🔬 Research: NLP & Music AI
-📚 Papers: AAAI 2024, NAACL 2025
-💻 Languages: Python, C++, JS
-🎵 Interests: Music, AI, Coding
-📧 Contact: elunamamka.tjh@gmail.com
-⭐ GitHub: ElunaMamka
-🌟 Motto: Believe in becoming your ideal self`,
-
-            matrix: () => {
-                let matrix = '';
-                const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-                for (let i = 0; i < 10; i++) {
-                    for (let j = 0; j < 20; j++) {
-                        matrix += chars[Math.floor(Math.random() * chars.length)];
-                    }
-                    matrix += '\n';
-                }
-                return `🕶️ 进入黑客帝国...\n${matrix}\n💊 选择红色药丸还是蓝色药丸？`;
-            },
-
-            love: () => `
-💖 爱心动画:
-    ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
-  ♥♥                    ♥♥
-♥♥        编程改变世界        ♥♥
-♥♥      Code Changes World    ♥♥
-  ♥♥                    ♥♥
-    ♥♥                ♥♥
-      ♥♥            ♥♥
-        ♥♥        ♥♥
-          ♥♥    ♥♥
-            ♥♥♥♥
-              ♥♥
-               ♥`,
-            
-            clear: () => "CLEAR_TERMINAL"
-        };
-
-        function handleTerminalInput(event) {
-            if (event.key === 'Enter') {
-                const input = event.target.value.trim();
-                const output = document.getElementById('terminal-output');
-                
-                // 显示用户输入
-                const userLine = document.createElement('div');
-                userLine.innerHTML = `<span style="color: #27ae60;">visitor@ElunaMamka:~$</span> ${input}`;
-                output.appendChild(userLine);
-                
-                // 解析命令和参数
-                const parts = input.split(' ');
-                const command = parts[0].toLowerCase();
-                const args = parts.slice(1).join(' ');
-                
-                // 处理命令
-                if (input === 'clear') {
-                    output.innerHTML = `
-                        <div style="color: #27ae60;">终端已清空！✨</div>
-                        <div style="color: #555; margin: 10px 0;">
-                            输入 'help' 查看可用命令
-                        </div>`;
-                } else if (command === 'calc' && args) {
-                    try {
-                        // 简单的计算器，只允许基本运算
-                        const sanitized = args.replace(/[^0-9+\-*/().\s]/g, '');
-                        const result = Function('"use strict"; return (' + sanitized + ')')();
-                        const response = document.createElement('div');
-                        response.style.color = '#27ae60';
-                        response.style.margin = '5px 0';
-                        response.textContent = `🧮 计算结果: ${args} = ${result}`;
-                        output.appendChild(response);
-                    } catch (error) {
-                        const errorLine = document.createElement('div');
-                        errorLine.style.color = '#e74c3c';
-                        errorLine.textContent = `❌ 计算错误: 请输入有效的数学表达式`;
-                        output.appendChild(errorLine);
-                    }
-                } else if (command === 'base64' && args) {
-                    try {
-                        const encoded = btoa(unescape(encodeURIComponent(args)));
-                        const response = document.createElement('div');
-                        response.style.color = '#3498db';
-                        response.style.margin = '5px 0';
-                        response.textContent = `🔐 Base64编码结果: ${encoded}`;
-                        output.appendChild(response);
-                    } catch (error) {
-                        const errorLine = document.createElement('div');
-                        errorLine.style.color = '#e74c3c';
-                        errorLine.textContent = `❌ 编码错误: 无法编码该文本`;
-                        output.appendChild(errorLine);
-                    }
-                } else if (command === 'reverse' && args) {
-                    const reversed = args.split('').reverse().join('');
-                    const response = document.createElement('div');
-                    response.style.color = '#9b59b6';
-                    response.style.margin = '5px 0';
-                    response.textContent = `🔄 反转结果: ${reversed}`;
-                    output.appendChild(response);
-                } else if (command === 'upper' && args) {
-                    const response = document.createElement('div');
-                    response.style.color = '#e67e22';
-                    response.style.margin = '5px 0';
-                    response.textContent = `🔤 大写结果: ${args.toUpperCase()}`;
-                    output.appendChild(response);
-                } else if (command === 'lower' && args) {
-                    const response = document.createElement('div');
-                    response.style.color = '#16a085';
-                    response.style.margin = '5px 0';
-                    response.textContent = `🔡 小写结果: ${args.toLowerCase()}`;
-                    output.appendChild(response);
-                } else if (command === 'echo' && args) {
-                    const response = document.createElement('div');
-                    response.style.color = '#34495e';
-                    response.style.margin = '5px 0';
-                    response.textContent = `📢 ${args}`;
-                    output.appendChild(response);
-                } else if (command === 'cowsay' && args) {
-                    const response = document.createElement('div');
-                    response.style.color = '#8e44ad';
-                    response.style.margin = '5px 0';
-                    response.style.fontFamily = 'monospace';
-                    response.textContent = `
- ${'_'.repeat(args.length + 2)}
-< ${args} >
- ${'-'.repeat(args.length + 2)}
-        \\   ^__^
-         \\  (oo)\\_______
-            (__)\\       )\\/\\
-                ||----w |
-                ||     ||`;
-                    output.appendChild(response);
-                } else if (input === 'sudo rm -rf /') {
-                    const response = document.createElement('div');
-                    response.style.color = '#e74c3c';
-                    response.style.margin = '5px 0';
-                    response.textContent = `🚫 权限不足！你以为我会让你这么做吗？😏`;
-                    output.appendChild(response);
-                } else if (input === 'exit' || input === 'quit') {
-                    const response = document.createElement('div');
-                    response.style.color = '#f39c12';
-                    response.style.margin = '5px 0';
-                    response.textContent = `👋 再见！感谢使用 ElunaMamka 终端！`;
-                    output.appendChild(response);
-                } else if (input.includes('hello') || input.includes('hi') || input.includes('你好')) {
-                    const greetings = [
-                        '👋 你好！欢迎来到我的终端！',
-                        '🎉 嗨！很高兴见到你！',
-                        '😊 Hello! 有什么可以帮助你的吗？',
-                        '🌟 你好呀！今天过得怎么样？'
-                    ];
-                    const response = document.createElement('div');
-                    response.style.color = '#27ae60';
-                    response.style.margin = '5px 0';
-                    response.textContent = greetings[Math.floor(Math.random() * greetings.length)];
-                    output.appendChild(response);
-                } else if (input === '42') {
-                    const response = document.createElement('div');
-                    response.style.color = '#3498db';
-                    response.style.margin = '5px 0';
-                    response.textContent = `🌌 42 - 生命、宇宙以及一切的终极答案！\n📚 《银河系漫游指南》的粉丝？`;
-                    output.appendChild(response);
-                } else if (input.toLowerCase().includes('coffee') || input.includes('咖啡')) {
-                    const response = document.createElement('div');
-                    response.style.color = '#8b4513';
-                    response.style.margin = '5px 0';
-                    response.textContent = `☕ 程序员的生命之源！来一杯？\n🔥 咖啡因正在加载... ████████████ 100%`;
-                    output.appendChild(response);
-                } else if (terminalCommands[command]) {
-                    const response = document.createElement('div');
-                    response.style.color = '#333';
-                    response.style.whiteSpace = 'pre-line';
-                    response.style.margin = '5px 0';
-                    response.textContent = terminalCommands[command]();
-                    output.appendChild(response);
-                } else if (input) {
-                    const errorLine = document.createElement('div');
-                    errorLine.style.color = '#e74c3c';
-                    errorLine.textContent = `命令未找到: ${command}。输入 'help' 查看可用命令。`;
-                    output.appendChild(errorLine);
-                }
-                
-                // 清空输入框并滚动到底部
-                event.target.value = '';
-                output.scrollTop = output.scrollHeight;
-            }
-        }
-
-        // 键盘控制
-        document.addEventListener('keydown', function(e) {
-            if (document.getElementById('gallery').classList.contains('active')) {
-                if (e.key === 'ArrowLeft') {
-                    prevPhoto();
-                } else if (e.key === 'ArrowRight') {
-                    nextPhoto();
-                } else if (e.key === ' ') {
-                    e.preventDefault();
-                    randomPhoto();
-                }
-            }
-        });
-
-        // 触摸滑动支持
-        let startX = 0;
-        let endX = 0;
-
-        document.getElementById('photo-main').addEventListener('touchstart', function(e) {
-            startX = e.touches[0].clientX;
-        });
-
-        document.getElementById('photo-main').addEventListener('touchend', function(e) {
-            endX = e.changedTouches[0].clientX;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
-            const threshold = 50; // 最小滑动距离
-            if (startX - endX > threshold) {
-                nextPhoto(); // 左滑，下一张
-            } else if (endX - startX > threshold) {
-                prevPhoto(); // 右滑，上一张
-            }
-        }
-
-        // 页面加载完成后初始化
-        window.addEventListener('load', function() {
-            updateGallery();
-        });
-
-        // 平滑滚动到顶部（当切换tab时）
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        // 为所有导航tab添加滚动到顶部功能
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.addEventListener('click', scrollToTop);
-        });
-
-        // ========== 地图相册功能 ==========
-        const mapPhotos = {
-            'sky-city': {
-                name: '天空之城',
-                description: '神秘的天空之城，传说中的理想之地',
-                photos: [
-                    { src: 'static/picture/fish.png', info: '天空之城的神秘生物 🐠', date: '2024-01-01' },
-                    { src: 'static/picture/002.png', info: '云端的美好时光 ✨', date: '2024-01-02' }
-                ]
-            },
-            'wuhan': {
-                name: '武汉',
-                description: '我的求学之地，充满回忆的城市',
-                photos: [
-                    { src: 'static/image/g.jpg', info: '武汉大学校园 🏫', date: '2023-09-01' }
-                ]
-            },
-            'beijing': {
-                name: '北京',
-                description: '首都北京，学术交流的重要地点',
-                photos: [
-                    { src: 'static/picture/002.png', info: '北京的学术会议 📚', date: '2024-03-15' }
-                ]
-            }
-        };
-
-        let mapScale = 1;
-        let mapX = 0;
-        let mapY = 0;
-        let isDragging = false;
-        let dragStartX = 0;
-        let dragStartY = 0;
-
-        // 地图缩放功能
-        function zoomIn() {
-            mapScale = Math.min(mapScale * 1.2, 3);
-            updateMapTransform();
-        }
-
-        function zoomOut() {
-            mapScale = Math.max(mapScale / 1.2, 0.5);
-            updateMapTransform();
-        }
-
-        function resetZoom() {
-            mapScale = 1;
-            mapX = 0;
-            mapY = 0;
-            updateMapTransform();
-        }
-
-        function updateMapTransform() {
-            const chinaMap = document.getElementById('china-map');
-            if (chinaMap) {
-                chinaMap.style.transform = `translate(-50%, -50%) translate(${mapX}px, ${mapY}px) scale(${mapScale})`;
-            }
-        }
-
-        // 地图拖拽功能
-        function initMapDrag() {
-            const mapCanvas = document.getElementById('map-canvas');
-            if (!mapCanvas) return;
-            
-            mapCanvas.addEventListener('mousedown', (e) => {
-                if (e.target.classList.contains('map-marker')) return;
-                isDragging = true;
-                dragStartX = e.clientX - mapX;
-                dragStartY = e.clientY - mapY;
-                mapCanvas.style.cursor = 'grabbing';
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    mapX = e.clientX - dragStartX;
-                    mapY = e.clientY - dragStartY;
-                    updateMapTransform();
-                }
-            });
-
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-                const mapCanvas = document.getElementById('map-canvas');
-                if (mapCanvas) mapCanvas.style.cursor = 'grab';
-            });
-
-            // 触摸支持
-            mapCanvas.addEventListener('touchstart', (e) => {
-                if (e.target.classList.contains('map-marker')) return;
-                isDragging = true;
-                const touch = e.touches[0];
-                dragStartX = touch.clientX - mapX;
-                dragStartY = touch.clientY - mapY;
-            });
-
-            mapCanvas.addEventListener('touchmove', (e) => {
-                if (isDragging) {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    mapX = touch.clientX - dragStartX;
-                    mapY = touch.clientY - dragStartY;
-                    updateMapTransform();
-                }
-            });
-
-            mapCanvas.addEventListener('touchend', () => {
-                isDragging = false;
-            });
-
-            // 滚轮缩放
-            mapCanvas.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                if (e.deltaY < 0) {
-                    zoomIn();
-                } else {
-                    zoomOut();
-                }
-            });
-        }
-
-        // 全屏功能
-        function toggleFullscreen() {
-            const mapContainer = document.querySelector('.map-container');
-            if (!mapContainer) return;
-            
-            if (!document.fullscreenElement) {
-                mapContainer.requestFullscreen().catch(err => {
-                    console.log('无法进入全屏模式:', err);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        // 显示照片模态框
-        function showPhotoModal(locationId) {
-            const modal = document.getElementById('photo-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const photoGrid = document.getElementById('photo-grid');
-            
-            const location = mapPhotos[locationId];
-            if (!location || !modal || !modalTitle || !photoGrid) return;
-            
-            modalTitle.textContent = `${location.name} - ${location.description}`;
-            
-            // 清空现有内容
-            photoGrid.innerHTML = '';
-            
-            // 添加照片
-            location.photos.forEach((photo, index) => {
-                const photoItem = document.createElement('div');
-                photoItem.className = 'photo-item';
-                photoItem.innerHTML = `
-                    <img src="${photo.src}" alt="${photo.info}" onclick="viewFullPhoto('${photo.src}', '${photo.info}')">
-                    <div class="photo-item-info">
-                        <div>${photo.info}</div>
-                        <div style="font-size: 12px; opacity: 0.8;">${photo.date}</div>
-                    </div>
-                `;
-                photoGrid.appendChild(photoItem);
-            });
-            
-            // 如果是天空之城，添加特殊效果
-            if (locationId === 'sky-city') {
-                modalTitle.innerHTML = `🏰 ${location.name} - ${location.description} ✨`;
-                modal.style.background = 'radial-gradient(circle, rgba(102,126,234,0.9) 0%, rgba(118,75,162,0.9) 100%)';
-            } else {
-                modal.style.background = 'rgba(0, 0, 0, 0.9)';
-            }
-            
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        // 关闭照片模态框
-        function closePhotoModal() {
-            const modal = document.getElementById('photo-modal');
-            if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-        }
-
-        // 查看完整照片
-        function viewFullPhoto(src, info) {
-            const fullPhotoViewer = document.createElement('div');
-            fullPhotoViewer.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.95);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 2000;
-                backdrop-filter: blur(10px);
-            `;
-            
-            fullPhotoViewer.innerHTML = `
-                <div style="position: relative; max-width: 90%; max-height: 90%;">
-                    <img src="${src}" alt="${info}" style="max-width: 100%; max-height: 100%; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
-                    <div style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); color: white; text-align: center; font-size: 16px; background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 20px;">
-                        ${info}
-                    </div>
-                    <button onclick="this.parentElement.parentElement.remove(); document.body.style.overflow='auto';" style="position: absolute; top: -40px; right: -40px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.9); border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">×</button>
-                </div>
-            `;
-            
-            fullPhotoViewer.addEventListener('click', (e) => {
-                if (e.target === fullPhotoViewer) {
-                    fullPhotoViewer.remove();
-                    document.body.style.overflow = 'auto';
-                }
-            });
-            
-            document.body.appendChild(fullPhotoViewer);
-            document.body.style.overflow = 'hidden';
-        }
-
-        // 初始化地图功能
-        function initMap() {
-            initMapDrag();
-            
-            // 更新标记点数量
-            Object.keys(mapPhotos).forEach(locationId => {
-                const marker = document.getElementById(`marker-${locationId}`);
-                const tooltip = marker?.querySelector('.marker-tooltip');
-                if (tooltip && locationId !== 'sky-city') {
-                    const count = mapPhotos[locationId].photos.length;
-                    tooltip.textContent = `${mapPhotos[locationId].name} - ${count}张照片`;
-                }
-            });
-
-            // 地图加载动画
-            const mapCanvas = document.getElementById('map-canvas');
-            if (mapCanvas) {
-                mapCanvas.style.opacity = '0';
-                mapCanvas.style.transition = 'opacity 1s ease';
-                setTimeout(() => {
-                    mapCanvas.style.opacity = '1';
-                }, 100);
-            }
-        }
-
-        // 扩展键盘控制
-        document.addEventListener('keydown', function(e) {
-            if (document.getElementById('gallery').classList.contains('active')) {
-                if (e.key === 'ArrowLeft') {
-                    prevPhoto();
-                } else if (e.key === 'ArrowRight') {
-                    nextPhoto();
-                } else if (e.key === ' ') {
-                    e.preventDefault();
-                    randomPhoto();
-                }
-            }
-            
-            // 地图相册键盘控制
-            if (document.getElementById('map').classList.contains('active')) {
-                switch(e.key) {
-                    case '+':
-                    case '=':
-                        e.preventDefault();
-                        zoomIn();
-                        break;
-                    case '-':
-                        e.preventDefault();
-                        zoomOut();
-                        break;
-                    case '0':
-                        e.preventDefault();
-                        resetZoom();
-                        break;
-                    case 'f':
-                    case 'F':
-                        e.preventDefault();
-                        toggleFullscreen();
-                        break;
-                    case 'Escape':
-                        const modal = document.getElementById('photo-modal');
-                        if (modal && modal.classList.contains('active')) {
-                            closePhotoModal();
-                        }
-                        break;
-                }
-            }
-        });
-
-        // 页面加载完成后初始化
-        window.addEventListener('load', function() {
-            updateGallery();
-            initMap();
-        });
-    </script>
+    <script src="data/content.js"></script>
+    <script src="data/advanced-backgrounds.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/map-album.js"></script>
 </body>
 
-</html>
+</html> 
